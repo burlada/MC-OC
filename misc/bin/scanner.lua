@@ -10,9 +10,9 @@ local keybinds = keys.loadConfig("/etc/scanner.cfg", {
   scanLvlDown = {{"minus"}, {"numpadsub"}}, scanLvlUp = {{"shift", "equals"}, {"numpadadd"}},
   toggleMode = {{"space"}}, close = {{"control", "q"}}, home = {{"home"}},
 })
-local running, changed, scanMode, status = true, true, "none", "wait"
+local changed, scanMode, status = true, "none", "wait"
 local bx,by,bz = 1,1,1
-local scanW, scanD, scanLvl, scanMaxLvl = 4, 2, 1, 6
+local scanW, scanD, scanLvl, scanMaxLvl, tick = 4, 2, 1, 6, 0
 local baseX = scanW*8+2
 local y,h,x,w,z,d = ...
 if not y or not geo or not gpu then
@@ -32,7 +32,6 @@ gpu.fill(1+scanW*8,1,1,scrH,"‖")
 gpu.fill(1,1+scanD*8,scrW,1,"=")
 
 local function close()
-  running=false
   term.clear()
   print("Finish after: "..tostring(tick))
   os.exit(0)
@@ -86,8 +85,8 @@ local keyHandler = keys.getHandler(keybinds, handlers)
 event.listen("interrupted", close)
 
 home()
-local tick, block = 0
-while running do
+local block
+while true do
   tick = tick + 1
   if changed or tick % 20 == 0 then draw(tick); changed=false end  
   status = "wait"
