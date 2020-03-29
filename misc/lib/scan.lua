@@ -33,6 +33,7 @@ function m.init(x, z, y, w, d, h)
           }
           local values={}
           for _=1,rbw*rbd*rbh do table.insert(values, 0) end
+          values = table.concat(values, "0")
           block = {
             dist=dist, sigma=sigma, scan_cnt=scan_cnt,
             cnt=0, size=rbw*rbd*rbh, values=values,
