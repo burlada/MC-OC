@@ -7,7 +7,8 @@ local geo, gpu = comp.geolyzer, comp.gpu
 local scrW, scrH = gpu.getResolution()
 local keybinds = keys.loadConfig("/etc/scanner.cfg", {
   left = {{"left"}}, right = {{"right"}}, up = {{"up"}}, down = {{"down"}}, pageUp = {{"pageUp"}}, pageDown = {{"pageDown"}},
-  scanLvlUp = {{"-"}}, scanLvlDown = {{"+"}}, toggleMode = {{"space"}}, close = {{"control", "c"}}, refresh = {{"r"}},
+  scanLvlUp = {{"minus"}, {"numpadsub"}}, scanLvlDown = {{"shift", "equals"}, {"numpadadd"}},
+  toggleMode = {{"space"}}, close = {{"control", "c"}}, refresh = {{"r"}},
 })
 local running, changed, scanMode = true, true, "full"
 local bx,by,bz = 1,1,1
@@ -39,10 +40,9 @@ local function close()
   os.exit(0)
 end
 local function shift(dx,dz,dy)
-  print("Shift", dx,dz,dy)
-  bx = math.max(0,math.min(bx+dx, data.bx-scanW+1))
-  bz = math.max(0,math.min(bz+dz, data.bz-scanD+1))
-  by = math.max(0,math.min(by+dy, data.by))
+  bx = math.max(1,math.min(bx+dx, scanner.bx-scanW+1))
+  bz = math.max(1,math.min(bz+dz, scanner.bz-scanD+1))
+  by = math.max(1,math.min(by+dy, scanner.by))
   changed = true
 end
 local function toggleMode()
@@ -70,7 +70,7 @@ local handlers = {
   pageUp = function() shift(0, 0, 1) end,
   pageDown = function() shift(0, 0, -1) end,
   scanLvlUp = function() scanLvl = math.min(scanLvl+1, scanMaxLvl); changed = true end,
-  scanLvlDown = function() scanLvl = math.max(0, scanLvl-1); changed = true end,
+  scanLvlDown = function() scanLvl = math.max(1, scanLvl-1); changed = true end,
   refresh = function() changed = true end,
   close = close,
   toggleMode = toggleMode,
