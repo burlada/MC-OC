@@ -59,9 +59,14 @@ function m.getScanCnt(data, lvl, _y, _h, _x, _z, _w, _d)
   if not _y then _y,_h = 1, data.by end
   if not _x then _x,_z,_w,_d = 1, 1, data.bx, data.bz end
   local cnt, need = 0, 0
-  for _,b in pairs(data.blocks) do
-    cnt = cnt + b.cnt
-    need = need + m.getBlockNeed(b, lvl)
+  for y=_y,_y+_h-1 do
+    for z=_z,_z+_d-1 do
+      for x=_x,_x+_w-1 do
+        local key = x + z*10 + y*100
+        local b = data.blocks[key]
+        cnt, need = cnt + b.cnt, need + m.getBlockNeed(b, lvl)
+      end
+    end
   end
   return cnt, need
 end
