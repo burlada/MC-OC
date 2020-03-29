@@ -8,7 +8,7 @@ local scrW, scrH = gpu.getResolution()
 local keybinds = keys.loadConfig("/etc/scanner.cfg", {
   left = {{"left"}}, right = {{"right"}}, up = {{"up"}}, down = {{"down"}}, pageUp = {{"pageUp"}}, pageDown = {{"pageDown"}},
   scanLvlUp = {{"minus"}, {"numpadsub"}}, scanLvlDown = {{"shift", "equals"}, {"numpadadd"}},
-  toggleMode = {{"space"}}, close = {{"control", "q"}}, refresh = {{"r"}}, home = {{"home"}},
+  toggleMode = {{"space"}}, close = {{"control", "q"}}, home = {{"home"}},
 })
 local running, changed, scanMode, status = true, true, "none", "wait"
 local bx,by,bz = 1,1,1
@@ -39,19 +39,16 @@ end
 local function home()
   local b = scanner.getNearestBlock()
   bx,bz,by = b.bx, b.bz, b.by
-  changed = true
 end
 local function shift(dx,dz,dy)
   bx = math.max(1,math.min(bx+dx, scanner.bx-scanW+1))
   bz = math.max(1,math.min(bz+dz, scanner.bz-scanD+1))
   by = math.max(1,math.min(by+dy, scanner.by))
-  changed = true
 end
 local function toggleMode()
   if scanMode == "full" then scanMode = "window"
   elseif scanMode == "window" then scanMode = "none"
   else scanMode = "full" end
-  changed = true
 end
 local function draw(tick)
   local repr = scanner.getRepr(by,bx,bz,scanW,scanD)
@@ -78,9 +75,8 @@ local handlers = {
   down = function() shift(0, 1, 0) end,
   pageUp = function() shift(0, 0, 1) end,
   pageDown = function() shift(0, 0, -1) end,
-  scanLvlUp = function() print("hey");scanLvl = math.min(scanLvl+1, scanMaxLvl); changed = true end,
-  scanLvlDown = function() print("hey");scanLvl = math.max(1, scanLvl-1); changed = true end,
-  refresh = function() changed = true end,
+  scanLvlUp = function() scanLvl = math.min(scanLvl+1, scanMaxLvl) end,
+  scanLvlDown = function() scanLvl = math.max(1, scanLvl-1) end,
   home = home,
   close = close,
   toggleMode = toggleMode,
@@ -112,5 +108,5 @@ while running do
   end
   local event, addr, arg1, arg2 = event.pullMultiple( (status=="wait") and 0.05 or 0, "key_down", "interrupted")
   if event == "interrupted" then close()
-  elseif event == "key_down" then keyHandler(event, addr, arg1, arg2) end
+  elseif event == "key_down" then keyHandler(event, addr, arg1, arg2); changed=true end
 end
