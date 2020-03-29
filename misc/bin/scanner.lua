@@ -8,9 +8,9 @@ local scrW, scrH = gpu.getResolution()
 local keybinds = keys.loadConfig("/etc/scanner.cfg", {
   left = {{"left"}}, right = {{"right"}}, up = {{"up"}}, down = {{"down"}}, pageUp = {{"pageUp"}}, pageDown = {{"pageDown"}},
   scanLvlUp = {{"minus"}, {"numpadsub"}}, scanLvlDown = {{"shift", "equals"}, {"numpadadd"}},
-  toggleMode = {{"space"}}, close = {{"control", "c"}}, refresh = {{"r"}},
+  toggleMode = {{"space"}}, close = {{"control", "q"}}, refresh = {{"r"}}, home = {{"home"}},
 })
-local running, changed, scanMode = true, true, "full"
+local running, changed, scanMode, status = true, true, "none", "wait"
 local bx,by,bz = 1,1,1
 local scanW, scanD, scanLvl, scanMaxLvl = 4, 2, 1, 6
 local baseX = scanW*8+2
@@ -31,13 +31,15 @@ gpu.fill(1,1,scrW,scrH," ")
 gpu.fill(1+scanW*8,1,1,scrH,"‖")
 gpu.fill(1,1+scanD*8,scrW,1,"=")
 
-local exitHandle,keyDownHandle
 local function close()
   running=false
-  event.cancel(exitHandle)
-  event.cancel(keyDownHandle)
   term.clear()
   os.exit(0)
+end
+local function home()
+  local b = scanner.getNearestBlock()
+  bx,bz,by = b.bx, b.bz, b.by
+  changed = true
 end
 local function shift(dx,dz,dy)
   bx = math.max(1,math.min(bx+dx, scanner.bx-scanW+1))
@@ -55,36 +57,60 @@ local function draw(tick)
   local repr = scanner.getRepr(by,bx,bz,scanW,scanD)
   local scans, sizes = scanner.getScanCnt()
   local cx,cz,cy = scanner.x+(bx-1+scanW/2)*scanner.bw, scanner.z+(bz-1+scanD/2)*scanner.bd, scanner.y+(by-1)*scanner.bh
+  local selfX, selfZ = -scanner.x-(bx-1)*scanner.bw, -scanner.z-(bz-1)*scanner.bd
+  
   for z, line in ipairs(repr) do gpu.set(1, z, line) end
+  if selfX >= 1 and selfZ >= 1 and selfX <= scanW*8 and selfZ <= scanD*8 then gpu.set(selfX, selfZ, "@") end
   gpu.fill(baseX, 1, scrW-baseX, scrH, " ")
+
   gpu.set(baseX,1, " Mode: "..scanMode)
-  gpu.set(baseX,2, " Tick: "..tostring(tick))
-  gpu.set(baseX,3, " Scan: "..tostring(scans))
-  gpu.set(baseX,4, " Lvl: "..tostring(scanLvl).."->"..tostring(sizes[scanLvl]))
-  gpu.set(baseX,5, " Bxyz: "..tostring(bx)..tostring(bz)..tostring(by))
-  gpu.set(baseX,6, " P: "..tostring(cx).." "..tostring(cz).." "..tostring(cy))
+  gpu.set(baseX,2, "  <"..status..">")
+  gpu.set(baseX,3, " Tick: "..tostring(tick))
+  gpu.set(baseX,4, " Scan: "..tostring(scans))
+  gpu.set(baseX,5, " Lvl: "..tostring(scanLvl).."->"..tostring(sizes[scanLvl]))
+  gpu.set(baseX,6, " Bxyz: "..tostring(bx)..tostring(bz)..tostring(by))
+  gpu.set(baseX,7, " P: "..tostring(cx).." "..tostring(cz).." "..tostring(cy))
 end
 local handlers = {
   left = function() shift(-1, 0, 0) end,
   right = function() shift(1, 0, 0) end,
-  up = function() shift(0, 1, 0) end,
-  down = function() shift(0, -1, 0) end,
+  up = function() shift(0, -1, 0) end,
+  down = function() shift(0, 1, 0) end,
   pageUp = function() shift(0, 0, 1) end,
   pageDown = function() shift(0, 0, -1) end,
   scanLvlUp = function() print("hey");scanLvl = math.min(scanLvl+1, scanMaxLvl); changed = true end,
   scanLvlDown = function() print("hey");scanLvl = math.max(1, scanLvl-1); changed = true end,
   refresh = function() changed = true end,
+  home = home,
   close = close,
   toggleMode = toggleMode,
 }
-exitHandle = event.listen("interrupted", close)
-keyDownHandle = keys.listen(keybinds, handlers)
+local keyHandler = keys.getHandler(keybinds, handlers)
+event.listen("interrupted", close)
 
-local tick = 0
+home()
+local tick, block = 0
 while running do
   tick = tick + 1
-  if changed or tick % 20 == 0 then draw(tick); changed=false end
-  local block = scanner.getScanBlock()
-  if block.cnt < block.scan_cnt[scanLvl] then block.scan(1);
-  else os.sleep(0.05) end
+  if changed or tick % 20 == 0 then draw(tick); changed=false end  
+  status = "wait"
+  if scanMode == "none" then --pass
+  elseif scanMode == "window" then
+    block = scanner.getScanBlock(bx,bz,by,scanW,scanD)
+    if block.cnt < block.scan_cnt[scanLvl] then block.scan(1); status = "scan window" end
+  elseif scanMode == "full" then
+    block = scanner.getScanBlock(bx,bz,by,scanW,scanD)
+    if block.cnt < block.scan_cnt[scanLvl] then block.scan(1); status = "scan window"
+    else
+      block = scanner.getScanBlock(1,1,by,scanner.bx,scanner.bz)
+      if block.cnt < block.scan_cnt[scanLvl] then block.scan(1); status = "scan level"
+      else
+        block = scanner.getScanBlock()
+        if block.cnt < block.scan_cnt[scanLvl] then block.scan(1); status = "scan full" end
+      end
+    end
+  end
+  local event, addr, arg1, arg2 = event.pullMultiple( (status=="wait") and 0.05 or 0, "key_down", "interrupted")
+  if event == "interrupted" then close()
+  elseif event == "key_down" then keyHandler(event, addr, arg1, arg2) end
 end

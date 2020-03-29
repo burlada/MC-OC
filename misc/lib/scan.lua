@@ -36,6 +36,7 @@ function m.init(x, z, y, w, d, h)
           dist=dist, sigma=sigma, scan_cnt=scan_cnt,
           cnt=0, size=rbw*rbd*rbh, values=values,
           x=px, z=pz, y=py, w=rbw, d=rbd, h=rbh,
+          bx=_x, bz=_z, by=_y,
         }
         function block.getData3D() return m._getBlockData3D(block, bw, bd, bh) end
         function block.getRepr2D(y) return m._getBlockRepr2D(block, y, bw, bd, bh) end
@@ -53,6 +54,7 @@ function m.init(x, z, y, w, d, h)
   function data.getScanCnt() return m.getScanCnt(data) end
   function data.getBlocks(_x,_z,_y,_w,_d) return m.getBlocks(data,_x,_z,_y,_w,_d) end
   function data.getScanBlock(_x,_z,_y,_w,_d) return m.getScanBlock(data,_x,_z,_y,_w,_d) end
+  function data.getNearestBlock(x,z,y) return m.getNearestBlock(data,x,z,y) end
   function data.getRepr(_y,_x,_z,_w,_d) return m.getRepr(data,_y,_x,_z,_w,_d) end
   return data
 end
@@ -159,6 +161,17 @@ function m.getScanBlock(data, _x, _z, _y, _w, _d)
   local min_value, min_block = 1e+10, nil
   for _,b in pairs(blocks) do
     value = b.cnt / b.sigma / b.sigma + b.dist*1e-6
+    if min_value > value then min_value, min_block = value, b end
+  end
+  return min_block
+end
+
+function m.getNearestBlock(data, x, z, y)
+  if not x then x, z, y = 0, 0, 0
+  local min_value, min_block = 1e+10, nil
+  for _,b in pairs(data.blocks) do
+    local cx,cy,cz = b.px+b.w/2,b.py+b.h/2,b.pz+b.d/2
+    value = (cx-x)*(cx-x) + (cy-y)*(cy-y) + (cz-z)*(cz-z)
     if min_value > value then min_value, min_block = value, b end
   end
   return min_block

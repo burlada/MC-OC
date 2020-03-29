@@ -67,7 +67,7 @@ function m.getKeybind(code, keybinds, handlers)
   return res, resName
 end
 
-function m.listen(keybinds, handlers, input)
+function m.getHandler(keybinds, handlers, input)
   local function keyDown(_, _, char, code)
     local handler = m.getKeybind(code, keybinds, handlers)
     if handler then handler()
@@ -77,7 +77,11 @@ function m.listen(keybinds, handlers, input)
         input("  ")
     end
   end
-  return event.listen("key_down", keyDown)
+  return keyDown
+end
+
+function m.listen(keybinds, handlers, input)
+  return event.listen("key_down", m.getHandler(keybinds, handlers, input))
 end
 
 return m
