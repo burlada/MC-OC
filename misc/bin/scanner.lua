@@ -1,10 +1,10 @@
 local comp=require("component")
 local scan=require("scan")
 local event=require("event")
-local keybinds=require("keybinds")
+local keys=require("keys")
 local geo, gpu = comp.geolyzer, comp.gpu
 local scrW, scrH = gpu.getResolution()
-local keys = keybinds.loadConfig("/etc/scanner.cfg", {
+local keybinds = keys.loadConfig("/etc/scanner.cfg", {
   left = {{"left"}}, right = {{"right"}}, up = {{"up"}}, down = {{"down"}}, pageUp = {{"pageUp"}}, pageDown = {{"pageDown"}},
   scanLvlUp = {{"-"}}, scanLvlDown = {{"+"}}, toggleMode = {{"space"}}, close = {{"control", "q"}}, refresh = {{"r"}},
 })
@@ -16,7 +16,7 @@ local y,h,x,w,z,d = ...
 if not y or not geo or not gpu then
   print("Usage: scanner y h x w z d")
   print("Need geolyzer and screen")
-  print(keybinds.help(keys))
+  print(keys.help(keybinds))
   os.exit(0)
 end
 y, h = tonumber(y or "0"), tonumber(h or "1")
@@ -73,7 +73,7 @@ local handlers = {
   toggleMode = toggleMode,
 }
 exitHandle = event.listen("interrupted", close)
-keyDownHandle = keybinds.listen(keys, handlers)
+keyDownHandle = keys.listen(keybinds, handlers)
 
 local tick = 0
 while running do
