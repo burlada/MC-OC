@@ -54,7 +54,9 @@ local function toggleMode()
 end
 local function draw(tick)
   local repr = scanner.getRepr(by,bx,bz,scanW,scanD)
-  local scans, sizes = scanner.getScanCnt()
+  local scansWin, needWin = scanner.getScanCnt(scanLvl,by,1,bx,bz,scanW,scanD)
+  local scansLevel, needLevel = scanner.getScanCnt(scanLvl,by,1)
+  local scansTotal, needTotal = scanner.getScanCnt(scanLvl)
   local cx,cz,cy = scanner.x+(bx-1+scanW/2)*scanner.bw, scanner.z+(bz-1+scanD/2)*scanner.bd, scanner.y+(by-1)*scanner.bh
   local selfX, selfZ = 1-scanner.x-(bx-1)*scanner.bw, 1-scanner.z-(bz-1)*scanner.bd
   
@@ -65,10 +67,12 @@ local function draw(tick)
   gpu.set(baseX,1, " Mode: "..scanMode)
   gpu.set(baseX,2, "  <"..status..">")
   gpu.set(baseX,3, " Tick: "..tostring(tick))
-  gpu.set(baseX,4, " Scan: "..tostring(scans))
-  gpu.set(baseX,5, " Lvl: "..tostring(scanLvl).."->"..tostring(sizes[scanLvl]))
-  gpu.set(baseX,6, " Bxyz: "..tostring(bx)..tostring(bz)..tostring(by))
-  gpu.set(baseX,7, " P: "..tostring(cx).." "..tostring(cz).." "..tostring(cy))
+  gpu.set(baseX,4, " Lvl: "..tostring(scanLvl))
+  gpu.set(baseX,5, " Win: "..tostring(scansWin).."/"..tostring(needWin))
+  gpu.set(baseX,6, " Lev: "..tostring(scansLevel).."/"..tostring(needLevel))
+  gpu.set(baseX,7, " Tot: "..tostring(scansTotal).."/"..tostring(needTotal))
+  gpu.set(baseX,8, " Bxyz: "..tostring(bx)..tostring(bz)..tostring(by))
+  gpu.set(baseX,9, " P: "..tostring(cx).." "..tostring(cz).." "..tostring(cy))
 end
 local handlers = {
   left = function() shift(-1, 0, 0) end,
@@ -94,16 +98,16 @@ while true do
   if scanMode == "none" then --pass
   elseif scanMode == "window" then
     block = scanner.getScanBlock(bx,bz,by,scanW,scanD)
-    if block.cnt < block.scan_cnt[scanLvl] then block.scan(1); status = "scan window" end
+    if block.cnt < block.scan_cnt[scanLvl] then scan.blockScan(block, 1); status = "scan window" end
   elseif scanMode == "full" then
     block = scanner.getScanBlock(bx,bz,by,scanW,scanD)
-    if block.cnt < block.scan_cnt[scanLvl] then block.scan(1); status = "scan window"
+    if block.cnt < block.scan_cnt[scanLvl] then scan.blockScan(block, 1); status = "scan window"
     else
       block = scanner.getScanBlock(1,1,by,scanner.bx,scanner.bz)
-      if block.cnt < block.scan_cnt[scanLvl] then block.scan(1); status = "scan level"
+      if block.cnt < block.scan_cnt[scanLvl] then scan.blockScan(block, 1); status = "scan level"
       else
         block = scanner.getScanBlock()
-        if block.cnt < block.scan_cnt[scanLvl] then block.scan(1); status = "scan full" end
+        if block.cnt < block.scan_cnt[scanLvl] then scan.blockScan(block, 1); status = "scan full" end
       end
     end
   end
