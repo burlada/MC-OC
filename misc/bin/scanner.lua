@@ -56,12 +56,14 @@ local function shift(dx,dz,dy)
   normalize()
 end
 local function activate(ny)
-  print("activate "..tostring(ny))
+  if ny == scanner.y then return end
   local x, z, w, d = scanner.x, scanner.z, scanner.w, scanner.d
-  fakeLevels[scanner.y] = scanner.getRepr(1)
   fakeLevels[ny] = nil
+  fakeLevels[scanner.y] = scanner.getRepr(1)
   scanner = nil
   scanner = scan.init(x,z,ny,w,d,1)
+  by=ny
+  print("Activated "..tostring(ny))
 end
 local function forceShift(dy)
   local oby = by
@@ -69,7 +71,6 @@ local function forceShift(dy)
   normalize()
   if by ~= oby then return end
   activate(by+dy)
-  by=by+dy
 end
 local function toggleMode()
   if scanMode == "none" then scanMode = "window"
@@ -98,7 +99,7 @@ local function draw(tick)
   gpu.fill(baseX, 1, scrW-baseX, scrH, " ")
 
   gpu.set(baseX,1, " Mode: "..scanMode)
-  gpu.set(baseX,2, "  <"..(fakeLevels[by] and "FAKE" or status)..">")
+  gpu.set(baseX,2, "  <"..status..">")
   gpu.set(baseX,3, " Tick: "..tostring(tick))
   gpu.set(baseX,4, " Lvl: "..tostring(scanLvl))
   if not fakeLevels[by] then
@@ -135,7 +136,8 @@ while true do
   tick = tick + 1
   if changed or tick % 20 == 0 then draw(tick); changed=false end  
   status = "wait"
-  if scanMode == "none" then --pass
+  if fakeLevels[by] then status="FAKE"
+  elseif scanMode == "none" then --pass
   elseif scanMode == "window" then
     block = scanner.getScanBlock(bx,bz,by,scanW,scanD)
     if block.cnt < scan.getBlockNeed(block, scanLvl) then scan.blockScan(block, 1); status = "scan window" end
@@ -151,7 +153,8 @@ while true do
       end
     end
   end
-  local event, addr, arg1, arg2 = event.pullMultiple( (status=="wait") and 0.05 or 0, "key_down", "interrupted")
+  local wait = (status=="wait" or status=="FAKE") and 0.05 or 0
+  local event, addr, arg1, arg2 = event.pullMultiple(wait, "key_down", "interrupted")
   if event == "interrupted" then close()
   elseif event == "key_down" then keyHandler(event, addr, arg1, arg2); changed=true end
 end
