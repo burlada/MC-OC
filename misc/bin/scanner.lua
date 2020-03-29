@@ -10,11 +10,12 @@ local keybinds = keys.loadConfig("/etc/scanner.cfg", {
   scanLvlDown = {{"minus"}, {"numpadsub"}}, scanLvlUp = {{"shift", "equals"}, {"numpadadd"}},
   toggleMode = {{"space"}}, close = {{"control", "q"}}, home = {{"home"}}, toggleSelf = {{"h"}},
   forcePageUp={{"control", "pageUp"}}, forcePageDown={{"control", "pageDown"}}, activate={{"control", "return"}},
+  save={{"control", "s"}}
 })
 local changed, scanMode, status, showSelf = true, "none", "wait", true
 local bx,by,bz = 1,1,1
 local scanW, scanD, scanLvl, scanMaxLvl, tick = 4, 2, 1, 6, 0
-local baseX = scanW*8+2
+local baseX,startTime = scanW*8+2, os.time()
 local fakeLevels = {}
 local scanner 
 do
@@ -81,6 +82,16 @@ local function sliceRepr(repr)
   for z=1+(bz-1)*8,(bz+scanD-1)*8 do table.insert(res, repr[z]:sub(sx,fx)) end
   return res
 end
+local function save()
+  local repr = fakeLevels[scanner.y+by-1]
+  if not repr then repr = scanner.getRepr(1) end
+  local f = assert(io.open("/tmp/save_level_"..tostring(scanner.y+by-1), "wb"))
+  for _, line in ipairs(repr) do
+    f:write(line)
+    f:write("\n")
+  end
+  f:close()
+end
 local function draw(tick)
   local cx,cz,cy = scanner.x+(bx-1+scanW/2)*scanner.bw, scanner.z+(bz-1+scanD/2)*scanner.bd, scanner.y+(by-1)*scanner.bh
   local selfX, selfZ = 1-scanner.x-(bx-1)*scanner.bw, 1-scanner.z-(bz-1)*scanner.bd
@@ -99,14 +110,15 @@ local function draw(tick)
   gpu.set(baseX,1, " Mode: "..scanMode)
   gpu.set(baseX,2, "  <"..status..">")
   gpu.set(baseX,3, " Tick: "..tostring(tick))
-  gpu.set(baseX,4, " Lvl: "..tostring(scanLvl))
+  gpu.set(baseX,4, " Time: "..tostring(math.ceil((os.time()-startTime)/72)))
+  gpu.set(baseX,6, " Lvl: "..tostring(scanLvl))
   if not fakeLevels[scanner.y+by-1] then
-    gpu.set(baseX,5, " *W: "..tostring(scansWin).."/"..tostring(needWin))
-    gpu.set(baseX,6, " *L: "..tostring(scansLevel).."/"..tostring(needLevel))
+    gpu.set(baseX,7, " *W: "..tostring(scansWin).."/"..tostring(needWin))
+    gpu.set(baseX,8, " *L: "..tostring(scansLevel).."/"..tostring(needLevel))
   end
-  gpu.set(baseX,7, " Bxyz: "..tostring(bx)..tostring(bz)..tostring(by))
-  gpu.set(baseX,8, " ScanY: "..tostring(scanner.y).." "..tostring(scanner.h))
-  gpu.set(baseX,9, " P: "..tostring(cx).." "..tostring(cz).." "..tostring(cy))
+  gpu.set(baseX,10, " Bxyz: "..tostring(bx)..tostring(bz)..tostring(by))
+  gpu.set(baseX,11, " ScanY: "..tostring(scanner.y).." "..tostring(scanner.h))
+  gpu.set(baseX,12, " P: "..tostring(cx).." "..tostring(cz).." "..tostring(cy))
 end
 local handlers = {
   left = function() shift(-1, 0, 0) end,
@@ -123,6 +135,7 @@ local handlers = {
   scanLvlUp = function() scanLvl = math.min(scanLvl+1, scanMaxLvl) end,
   scanLvlDown = function() scanLvl = math.max(1, scanLvl-1) end,
   toggleSelf = function() showSelf = not showSelf end,
+  save = save,
   home = home,
   close = close,
   toggleMode = toggleMode,
