@@ -42,7 +42,7 @@ end
 local function normalize()
   bx = math.max(1,math.min(bx, scanner.bx-scanW+1))
   bz = math.max(1,math.min(bz, scanner.bz-scanD+1))
-  if not fakeLevels[by] then 
+  if not fakeLevels[scanner.y+by-1] then 
     by = math.max(1,math.min(by, scanner.by))
   end
 end
@@ -58,12 +58,11 @@ end
 local function activate(ny)
   if ny == scanner.y then return end
   local x, z, w, d = scanner.x, scanner.z, scanner.w, scanner.d
-  fakeLevels[ny] = nil
+  fakeLevels[scanner.y+ny-1] = nil
   fakeLevels[scanner.y] = scanner.getRepr(1)
   scanner = nil
   scanner = scan.init(x,z,ny,w,d,1)
-  by=ny
-  print("Activated "..tostring(ny))
+  by=1
 end
 local function forceShift(dy)
   local oby = by
@@ -87,12 +86,12 @@ local function draw(tick)
   local cx,cz,cy = scanner.x+(bx-1+scanW/2)*scanner.bw, scanner.z+(bz-1+scanD/2)*scanner.bd, scanner.y+(by-1)*scanner.bh
   local selfX, selfZ = 1-scanner.x-(bx-1)*scanner.bw, 1-scanner.z-(bz-1)*scanner.bd
   local repr, scansWin, needWin, scansLevel, needLevel
-  if not fakeLevels[by] then
+  if not fakeLevels[scanner.y+by-1] then
     repr = scanner.getRepr(by,bx,bz,scanW,scanD)
     scansWin, needWin = scanner.getScanCnt(scanLvl,by,1,bx,bz,scanW,scanD)
     scansLevel, needLevel = scanner.getScanCnt(scanLvl,by,1)
   else
-    repr = sliceRepr(fakeLevels[by])
+    repr = sliceRepr(fakeLevels[scanner.y+by-1])
   end
   for z, line in ipairs(repr) do gpu.set(1, z, line) end
   if selfX >= 1 and selfZ >= 1 and selfX <= scanW*8 and selfZ <= scanD*8 and showSelf then gpu.set(selfX, selfZ, "@") end
@@ -102,7 +101,7 @@ local function draw(tick)
   gpu.set(baseX,2, "  <"..status..">")
   gpu.set(baseX,3, " Tick: "..tostring(tick))
   gpu.set(baseX,4, " Lvl: "..tostring(scanLvl))
-  if not fakeLevels[by] then
+  if not fakeLevels[scanner.y+by-1] then
     gpu.set(baseX,5, " *W: "..tostring(scansWin).."/"..tostring(needWin))
     gpu.set(baseX,6, " *L: "..tostring(scansLevel).."/"..tostring(needLevel))
   end
@@ -136,7 +135,7 @@ while true do
   tick = tick + 1
   if changed or tick % 20 == 0 then draw(tick); changed=false end  
   status = "wait"
-  if fakeLevels[by] then status="FAKE"
+  if fakeLevels[scanner.y+by-1] then status="FAKE"
   elseif scanMode == "none" then --pass
   elseif scanMode == "window" then
     block = scanner.getScanBlock(bx,bz,by,scanW,scanD)
