@@ -2,7 +2,7 @@ local command, arg = ...
 local gitrepo = "burlada/MC-OC"
 local gitraw = "https://raw.githubusercontent.com/"..gitrepo.."/master/"
 local generalFiles = {
-  ["misc/misc.lua"] = {path = "/lib/misc.lua", _module = "misc"},
+  ["misc/lib/misc.lua"] = {path = "/lib/misc.lua", _module = "misc"},
   ["setup.lua"] = {path = "/bin/setup.lua"},
 }
 local mods = {

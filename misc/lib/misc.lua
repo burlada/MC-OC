@@ -2,15 +2,18 @@ local m = {}
 
 function m.preq(...)
   local status, lib = pcall(require, ...)
-  if status then return lib else print("Fail to load lib") end
+  if status then return lib else print("Fail to load lib:", ...) end
   return nil
 end
 
 local internet = m.preq("internet")
 local serialization = m.preq("serialization")
+local shell, term = m.preq("shell"), m.preq("term")
+local gpu = term and term.gpu or nil
 local fs = require("filesystem")
 local userGitPassFile = "/etc/user_git_pass"
 local mcocModsFile = "/etc/mcoc_mods"
+local tmpLessFile = "/tmp/ram_less_file"
 
 function m.unrequire(...)
   for _, lib in ipairs(table.pack(...)) do package.loaded[lib] = nil end
@@ -135,7 +138,7 @@ if internet then
     if result then
       for chunk in response do table.insert(chunks, chunk) ;io.write("."); end
       print("Done")
-    else error("Request failed: "..(response or "") end
+    else error("Request failed: "..(response or "")) end
     return table.concat(chunks)
   end
 
@@ -179,6 +182,7 @@ function m.readSerFile(path)
 end
 
 function m.writeSerFile(path, obj)
+  fs.makeDirectory(fs.path(path))
   local file = assert(io.open(path, "wb"))
   file:write(assert(serialization.serialize(obj)))
   file:close()
@@ -228,6 +232,28 @@ function m.reload()
   for _, _module in ipairs(modulesToLoad) do
     print("Load", _module)
     require(_module)
+  end
+end
+
+if term then
+  function m.lessString(s)
+    local file = assert(io.open(tmpLessFile, "wb"))
+    file:write(s)
+    file:close()
+    shell.execute("less "..tmpLessFile)
+    pcall(fs.remove, tmpLessFile)
+  end
+  function m.lessTable(t)
+    local file = assert(io.open(tmpLessFile, "wb"))
+    for k,v in pairs(t) do
+      file:write(m.ser(k))
+      file:write(" = ")
+      file:write(m.ser(v))
+      file:write("\n")
+    end
+    file:close()
+    shell.execute("less "..tmpLessFile)
+    pcall(fs.remove, tmpLessFile)
   end
 end
 

@@ -1,6 +1,29 @@
-package.path = './emul/?.lua;./misc/?.lua;' .. package.path
+package.path = './emul/?.lua;./misc/lib/?.lua;' .. package.path
 exec = require "exec"
 misc = require "misc"
+scan = require "scan"
+
+s = {1,2,3}
+for i, cmd in ipairs({table.unpack(s,1,#s-3)}) do
+  print(i,cmd)
+end
+
+
+--local data = scan.init(-31,-31,1,64,64,1)
+--while true do
+--  local b = data.getScanBlock()
+--  if b.cnt >= b.scan_cnt[1] then break end
+--  b.scan(1)
+--end
+--local cnt, scan_cnt = data.getScanCnt()
+--local blocks = data.getBlocks(1,1,1,8,8)
+--print(data)
+--print(cnt)
+--print(misc._printTable(scan_cnt))
+--print(misc._printTable(data.blocks[111]))
+--print(misc._printTable(blocks))
+--print(misc._printTable(data.getBlocks(3,3,1,1,1)[1].getData3D()[1]))
+--print(misc._printTable(data.getRepr(1)))
 
 
 
