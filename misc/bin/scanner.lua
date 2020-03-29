@@ -87,7 +87,7 @@ home()
 local block
 while true do
   tick = tick + 1
-  if changed or tick % 20 == 0 then draw(tick); changed=false end  
+--  if changed or tick % 20 == 0 then draw(tick); changed=false end  
   status = "wait"
   if scanMode == "none" then --pass
   elseif scanMode == "window" then
