@@ -58,6 +58,16 @@ local function update(mod)
   for mod,_ in pairs(misc.getMods()) do installMod(mod)end
 end
 
+local function sync(file)
+  for mod,desc in pairs(misc.getMods()) do
+    for gitfile,info in pairs(desc.files or {}) do
+      if info.path:match(file) then
+        misc.wgetGitFile(gitrepo, gitfile, info.path, true)
+      end
+    end  
+  end
+end
+
 local function printFiles(mod)
   if not mod then
     misc.printTable(generalFiles)
@@ -85,6 +95,7 @@ end
 local commands = {
   auth = {func = auth, desc = "User:Password auth for git", short="a"},
   update = {func = update, desc = "Update all", short="u"},
+  sync = {func = sync, desc = "Sync file", short="s"},
   install = {func = installMod, desc = "Install mod", short="i"},
   files = {func = printFiles, desc = "Self or mod files", short="l"},
   mods = {func = printMods, desc = "List mods", short="m"},

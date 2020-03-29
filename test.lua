@@ -3,11 +3,8 @@ exec = require "exec"
 misc = require "misc"
 scan = require "scan"
 
-s = {1,2,3}
-for i, cmd in ipairs({table.unpack(s,1,#s-3)}) do
-  print(i,cmd)
-end
-
+s = " a b"
+print(s:match("a.?b"))
 
 --local data = scan.init(-31,-31,1,64,64,1)
 --while true do
