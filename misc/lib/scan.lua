@@ -73,18 +73,8 @@ end
 
 function m.getBlocks(data, _x, _z, _y, _w, _d)
   local res={}
-  for __z=_z,_z+_d do
-    for __x=_x,_x+_w do
-      table.insert(res, data.blocks[__x+__z*10+_y*100])
-    end
-  end
-  return res
-end
-
-function m.getBlocks(data, _x, _z, _y, _w, _d)
-  local res={}
-  for __z=_z,_z+_d do
-    for __x=_x,_x+_w do
+  for __z=_z,_z+_d-1 do
+    for __x=_x,_x+_w-1 do
       table.insert(res, data.blocks[__x+__z*10+_y*100])
     end
   end
