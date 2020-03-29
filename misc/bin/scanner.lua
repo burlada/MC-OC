@@ -67,6 +67,7 @@ local function draw(tick)
   gpu.set(baseX,5, " Lvl: "..tostring(scanLvl).."->"..tostring(sizes[scanLvl]))
   gpu.set(baseX,6, " Bxyz: "..tostring(bx)..tostring(bz)..tostring(by))
   gpu.set(baseX,7, " P: "..tostring(cx).." "..tostring(cz).." "..tostring(cy))
+  gpu.set(baseX,8, " Self: "..tostring(selfX).." "..tostring(selfZ))
 end
 local handlers = {
   left = function() shift(-1, 0, 0) end,
@@ -87,7 +88,7 @@ home()
 local block
 while true do
   tick = tick + 1
---  if changed or tick % 20 == 0 then draw(tick); changed=false end  
+  if changed or tick % 20 == 0 then draw(tick); changed=false end  
   status = "wait"
   if scanMode == "none" then --pass
   elseif scanMode == "window" then
