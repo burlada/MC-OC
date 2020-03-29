@@ -7,7 +7,7 @@ local geo, gpu = comp.geolyzer, comp.gpu
 local scrW, scrH = gpu.getResolution()
 local keybinds = keys.loadConfig("/etc/scanner.cfg", {
   left = {{"left"}}, right = {{"right"}}, up = {{"up"}}, down = {{"down"}}, pageUp = {{"pageUp"}}, pageDown = {{"pageDown"}},
-  scanLvlUp = {{"minus"}, {"numpadsub"}}, scanLvlDown = {{"shift", "equals"}, {"numpadadd"}},
+  scanLvlDown = {{"minus"}, {"numpadsub"}}, scanLvlUp = {{"shift", "equals"}, {"numpadadd"}},
   toggleMode = {{"space"}}, close = {{"control", "q"}}, home = {{"home"}},
 })
 local running, changed, scanMode, status = true, true, "none", "wait"
