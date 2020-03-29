@@ -158,7 +158,7 @@ function m.getScanBlock(data, _x, _z, _y, _w, _d)
   else blocks = m.getBlocks(data, _x, _z, _y, _w, _d) end
   local min_value, min_block = 1e+10, nil
   for _,b in pairs(blocks) do
-    local value = b.cnt / b.s / b.s + b.sigma*1e-6
+    local value = b.cnt / b.s / b.s + b.s*1e-6
     if min_value > value then min_value, min_block = value, b end
   end
   return min_block
