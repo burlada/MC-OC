@@ -4,8 +4,8 @@ local geo = comp.geolyzer
 local m = {}
 m._repr_air = " "
 m._repr_unknown = "?"
-m._repr_sym = {"░", "▒", "█", "≈"}
-m._repr_val = {1, 2.25, 10}
+m._repr_sym = {"░", "▒", "▓", "█", "≈"}
+m._repr_val = {1, 1.75, 2.25, 10}
 
 function m.init(x, z, y, w, d, h)
   local bw, bd, bh = 8, 8, 1

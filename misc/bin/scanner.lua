@@ -38,7 +38,9 @@ local function close()
 end
 local function home()
   local b = scanner.getNearestBlock()
-  bx,bz,by = b.bx, b.bz, b.by
+  bx = math.max(1,math.min(b.bx-1, scanner.bx-scanW+1))
+  bz = math.max(1,math.min(b.bz-1, scanner.bz-scanD+1))
+  by = math.max(1,math.min(b.by, scanner.by))
 end
 local function shift(dx,dz,dy)
   bx = math.max(1,math.min(bx+dx, scanner.bx-scanW+1))
