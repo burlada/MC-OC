@@ -104,7 +104,7 @@ function m._getBlockData3D(block, bw, bd, bh)
     for z=0,bd-1 do
       local line = {}
       for x=1,bw do
-        if block.cnt > 0 and x <= block.w and z < block.d and y < block.h then
+        if block and block.cnt > 0 and x <= block.w and z < block.d and y < block.h then
           table.insert(line, block.values[x + z*bd + y*bd*bh] / block.cnt)
         else
           table.insert(line, false)
