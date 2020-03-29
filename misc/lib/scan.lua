@@ -160,18 +160,18 @@ function m.getScanBlock(data, _x, _z, _y, _w, _d)
   else blocks = m.getBlocks(data, _x, _z, _y, _w, _d) end
   local min_value, min_block = 1e+10, nil
   for _,b in pairs(blocks) do
-    value = b.cnt / b.sigma / b.sigma + b.dist*1e-6
+    local value = b.cnt / b.sigma / b.sigma + b.dist*1e-6
     if min_value > value then min_value, min_block = value, b end
   end
   return min_block
 end
 
 function m.getNearestBlock(data, x, z, y)
-  if not x then x, z, y = 0, 0, 0
+  if not x then x, z, y = 0, 0, 0 end
   local min_value, min_block = 1e+10, nil
   for _,b in pairs(data.blocks) do
     local cx,cy,cz = b.px+b.w/2,b.py+b.h/2,b.pz+b.d/2
-    value = (cx-x)*(cx-x) + (cy-y)*(cy-y) + (cz-z)*(cz-z)
+    local value = (cx-x)*(cx-x) + (cy-y)*(cy-y) + (cz-z)*(cz-z)
     if min_value > value then min_value, min_block = value, b end
   end
   return min_block
