@@ -82,7 +82,6 @@ local handlers = {
   toggleMode = toggleMode,
 }
 local keyHandler = keys.getHandler(keybinds, handlers)
-event.listen("interrupted", close)
 
 home()
 local block
