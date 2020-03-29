@@ -98,16 +98,16 @@ while true do
   if scanMode == "none" then --pass
   elseif scanMode == "window" then
     block = scanner.getScanBlock(bx,bz,by,scanW,scanD)
-    if block.cnt < block.scan_cnt[scanLvl] then scan.blockScan(block, 1); status = "scan window" end
+    if block.cnt < scan.getBlockNeed(block, scanLvl) then scan.blockScan(block, 1); status = "scan window" end
   elseif scanMode == "full" then
     block = scanner.getScanBlock(bx,bz,by,scanW,scanD)
-    if block.cnt < block.scan_cnt[scanLvl] then scan.blockScan(block, 1); status = "scan window"
+    if block.cnt < scan.getBlockNeed(block, scanLvl) then scan.blockScan(block, 1); status = "scan window"
     else
       block = scanner.getScanBlock(1,1,by,scanner.bx,scanner.bz)
-      if block.cnt < block.scan_cnt[scanLvl] then scan.blockScan(block, 1); status = "scan level"
+      if block.cnt < scan.getBlockNeed(block, scanLvl) then scan.blockScan(block, 1); status = "scan level"
       else
         block = scanner.getScanBlock()
-        if block.cnt < block.scan_cnt[scanLvl] then scan.blockScan(block, 1); status = "scan full" end
+        if block.cnt < scan.getBlockNeed(block, scanLvl) then scan.blockScan(block, 1); status = "scan full" end
       end
     end
   end

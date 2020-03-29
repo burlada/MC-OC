@@ -50,7 +50,7 @@ function m.init(x, z, y, w, d, h)
 end
 
 local scanLevels= {1, 7, 27, 54, 107, 211}
-function m.getBlockLimit(b, lvl)
+function m.getBlockNeed(b, lvl)
   if lvl <= 1 then return 1 end  
   return math.ceil(scanLevels[lvl]*b.s*b.s)
 end
@@ -61,7 +61,7 @@ function m.getScanCnt(data, lvl, _y, _h, _x, _z, _w, _d)
   local cnt, need = 0, 0
   for _,b in pairs(data.blocks) do
     cnt = cnt + b.cnt
-    need = need + m.getBlockLimit(b, lvl)
+    need = need + m.getBlockNeed(b, lvl)
   end
   return cnt, need
 end
