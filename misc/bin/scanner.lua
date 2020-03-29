@@ -49,12 +49,14 @@ local function toggleMode()
   if scanMode == "full" then scanMode = "window"
   elseif scanMode == "window" then scanMode = "none"
   else scanMode = "full" end
+  changed = true
 end
 local function draw(tick)
   local repr = scanner.getRepr(by,bx,bz,scanW,scanD)
   local scans, sizes = scanner.getScanCnt()
   local cx,cz,cy = scanner.x+(bx-1+scanW/2)*scanner.bw, scanner.z+(bz-1+scanD/2)*scanner.bd, scanner.y+(by-1)*scanner.bh
-  for z, line in ipairs(repr) do gpu.set(1, 1+#repr-z, line) end
+  for z, line in ipairs(repr) do gpu.set(1, z, line) end
+  gpu.fill(baseX, 1, scrW-baseX, scrH, " ")
   gpu.set(baseX,1, " Mode: "..scanMode)
   gpu.set(baseX,2, " Tick: "..tostring(tick))
   gpu.set(baseX,3, " Scan: "..tostring(scans))
@@ -69,8 +71,8 @@ local handlers = {
   down = function() shift(0, -1, 0) end,
   pageUp = function() shift(0, 0, 1) end,
   pageDown = function() shift(0, 0, -1) end,
-  scanLvlUp = function() scanLvl = math.min(scanLvl+1, scanMaxLvl); changed = true end,
-  scanLvlDown = function() scanLvl = math.max(1, scanLvl-1); changed = true end,
+  scanLvlUp = function() print("hey");scanLvl = math.min(scanLvl+1, scanMaxLvl); changed = true end,
+  scanLvlDown = function() print("hey");scanLvl = math.max(1, scanLvl-1); changed = true end,
   refresh = function() changed = true end,
   close = close,
   toggleMode = toggleMode,
