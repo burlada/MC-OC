@@ -14,33 +14,35 @@ function m.init(x, z, y, w, d, h)
   for _x=1,bx do
     for _z=1,bz do
       for _y=1,by do
-        local key = _x + _z*10 + _y*100
-        local px, pz, py = x + (_x - 1) * bw, z + (_z -1) * bd, y + (_y - 1) * bh
-        local rbw, rbd, rbh = _x*bw<=w and bw or w%bw, _z*bd<=d and bd or d%bd, _y*bh<=h and bh or h%bh
-        local lx = math.max(math.abs(px), math.abs(px+rbw)) 
-        local lz = math.max(math.abs(pz), math.abs(pz+rbd)) 
-        local ly = math.max(math.abs(py), math.abs(py+rbh)) 
-        local dist = math.sqrt(lx*lx + ly*ly + lz*lz)
-        local sigma = 0.05/math.sqrt(2)*dist
-        local scan_cnt = {
-          1, -- scan for air/water -- 0% error +-10
-          math.ceil(7*sigma*sigma), -- 1% error +-1
-          math.ceil(27*sigma*sigma), -- 1% error +-0.5
-          math.ceil(54*sigma*sigma), -- ~1 error +- 0.5 per 64x64
-          math.ceil(107*sigma*sigma), -- 1% error +- 0.25
-          math.ceil(211*sigma*sigma), -- ~1 error +- 0.25 per 64*64
-        }
-        local values={}
-        for _=1,rbw*rbd*rbh do table.insert(values, 0) end
-        local block = {
-          dist=dist, sigma=sigma, scan_cnt=scan_cnt,
-          cnt=0, size=rbw*rbd*rbh, values=values,
-          x=px, z=pz, y=py, w=rbw, d=rbd, h=rbh,
-          bx=_x, bz=_z, by=_y,
-        }
-        function block.getData3D() return m._getBlockData3D(block, bw, bd, bh) end
-        function block.getRepr2D(y) return m._getBlockRepr2D(block, y, bw, bd, bh) end
-        function block.scan(cnt) return m._blockScan(block, cnt) end
+        local key, block = _x + _z*10 + _y*100
+        do 
+          local px, pz, py = x + (_x - 1) * bw, z + (_z -1) * bd, y + (_y - 1) * bh
+          local rbw, rbd, rbh = _x*bw<=w and bw or w%bw, _z*bd<=d and bd or d%bd, _y*bh<=h and bh or h%bh
+          local lx = math.max(math.abs(px), math.abs(px+rbw)) 
+          local lz = math.max(math.abs(pz), math.abs(pz+rbd)) 
+          local ly = math.max(math.abs(py), math.abs(py+rbh)) 
+          local dist = math.sqrt(lx*lx + ly*ly + lz*lz)
+          local sigma = 0.05/math.sqrt(2)*dist
+          local scan_cnt = {
+            1, -- scan for air/water -- 0% error +-10
+            math.ceil(7*sigma*sigma), -- 1% error +-1
+            math.ceil(27*sigma*sigma), -- 1% error +-0.5
+            math.ceil(54*sigma*sigma), -- ~1 error +- 0.5 per 64x64
+            math.ceil(107*sigma*sigma), -- 1% error +- 0.25
+            math.ceil(211*sigma*sigma), -- ~1 error +- 0.25 per 64*64
+          }
+          local values={}
+          for _=1,rbw*rbd*rbh do table.insert(values, 0) end
+          block = {
+            dist=dist, sigma=sigma, scan_cnt=scan_cnt,
+            cnt=0, size=rbw*rbd*rbh, values=values,
+            x=px, z=pz, y=py, w=rbw, d=rbd, h=rbh,
+            bx=_x, bz=_z, by=_y,
+          }
+          function block.getData3D() return m._getBlockData3D(block, bw, bd, bh) end
+          function block.getRepr2D(y) return m._getBlockRepr2D(block, y, bw, bd, bh) end
+          function block.scan(cnt) return m._blockScan(block, cnt) end
+        end
         blocks[key] = block
       end
     end

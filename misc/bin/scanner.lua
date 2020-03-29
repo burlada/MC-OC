@@ -85,7 +85,6 @@ local handlers = {
   toggleMode = toggleMode,
 }
 local keyHandler = keys.getHandler(keybinds, handlers)
-print("die")
 home()
 local block
 while true do
