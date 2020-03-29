@@ -170,7 +170,7 @@ function m.getNearestBlock(data, x, z, y)
   if not x then x, z, y = 0, 0, 0 end
   local min_value, min_block = 1e+10, nil
   for _,b in pairs(data.blocks) do
-    local cx,cy,cz = b.px+b.w/2,b.py+b.h/2,b.pz+b.d/2
+    local cx,cy,cz = b.x+b.w/2,b.y+b.h/2,b.z+b.d/2
     local value = (cx-x)*(cx-x) + (cy-y)*(cy-y) + (cz-z)*(cz-z)
     if min_value > value then min_value, min_block = value, b end
   end
