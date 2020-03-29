@@ -7,7 +7,7 @@ local geo, gpu = comp.geolyzer, comp.gpu
 local scrW, scrH = gpu.getResolution()
 local keybinds = keys.loadConfig("/etc/scanner.cfg", {
   left = {{"left"}}, right = {{"right"}}, up = {{"up"}}, down = {{"down"}}, pageUp = {{"pageUp"}}, pageDown = {{"pageDown"}},
-  scanLvlUp = {{"-"}}, scanLvlDown = {{"+"}}, toggleMode = {{"space"}}, close = {{"control", "q"}}, refresh = {{"r"}},
+  scanLvlUp = {{"-"}}, scanLvlDown = {{"+"}}, toggleMode = {{"space"}}, close = {{"control", "c"}}, refresh = {{"r"}},
 })
 local running, changed, scanMode = true, true, "full"
 local bx,by,bz = 1,1,1
@@ -81,7 +81,7 @@ keyDownHandle = keys.listen(keybinds, handlers)
 local tick = 0
 while running do
   tick = tick + 1
---  if changed or tick % 20 == 0 then draw(tick); changed=false end
+  if changed or tick % 20 == 0 then draw(tick); changed=false end
   local block = scanner.getScanBlock()
   if block.cnt < block.scan_cnt[scanLvl] then block.scan(1);
   else os.sleep(0.05) end
