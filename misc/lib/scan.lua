@@ -39,12 +39,12 @@ function m.init(x, z, y, w, d, h)
             cnt=0, -- size=rbw*rbd*rbh,
             values=values,
             --x=px, z=pz, y=py, w=rbw, d=rbd, h=rbh,
-            bx=_x, bz=_z, by=_y,
+--            bx=_x, bz=_z, by=_y,
           }
         end
-        function block.getData3D() return m._getBlockData3D(block, bw, bd, bh) end
-        function block.getRepr2D(y) return m._getBlockRepr2D(block, y, bw, bd, bh) end
-        function block.scan(cnt) return m._blockScan(block, cnt) end
+--        function block.getData3D() return m._getBlockData3D(block, bw, bd, bh) end
+--        function block.getRepr2D(y) return m._getBlockRepr2D(block, y, bw, bd, bh) end
+--        function block.scan(cnt) return m._blockScan(block, cnt) end
         blocks[key] = block
       end
     end
