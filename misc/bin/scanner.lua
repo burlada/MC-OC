@@ -9,7 +9,7 @@ local keybinds = keys.loadConfig("/etc/scanner.cfg", {
   left = {{"left"}}, right = {{"right"}}, up = {{"up"}}, down = {{"down"}}, pageUp = {{"pageUp"}}, pageDown = {{"pageDown"}},
   scanLvlDown = {{"minus"}, {"numpadsub"}}, scanLvlUp = {{"shift", "equals"}, {"numpadadd"}},
   toggleMode = {{"space"}}, close = {{"control", "q"}}, home = {{"home"}}, toggleSelf = {{"h"}},
-  forcePageUp={{"control", "pageUp"}}, forcePageDown={{"control", "pageDown"}}, activate={{"control", "enter"}},
+  forcePageUp={{"control", "pageUp"}}, forcePageDown={{"control", "pageDown"}}, activate={{"control", "return"}},
 })
 local changed, scanMode, status, showSelf = true, "none", "wait", true
 local bx,by,bz = 1,1,1
