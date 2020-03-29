@@ -56,12 +56,12 @@ local function shift(dx,dz,dy)
   bx,bz,by=bx+dx,bz+dz,by+dy
   normalize()
 end
-local function activate(dy)
+local function activate(ny)
   if ny == scanner.y then return end
-  local x, z, y, w, d = scanner.x, scanner.z, scanner.y, scanner.w, scanner.d
+  local x, z, w, d = scanner.x, scanner.z, scanner.w, scanner.d
   fakeLevels[scanner.y] = scanner.getRepr(1)
   scanner = nil
-  scanner = scan.init(x,z,y+dy,w,d,1)
+  scanner = scan.init(x,z,ny,w,d,1)
   by=1
 end
 local function forceShift(dy)
@@ -69,7 +69,7 @@ local function forceShift(dy)
   by=by+dy
   normalize()
   if by ~= oby then return end
-  activate(dy)
+  activate(scanner.y+by+dy-1)
 end
 local function toggleMode()
   if scanMode == "none" then scanMode = "window"
