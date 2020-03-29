@@ -34,6 +34,7 @@ gpu.fill(1,1+scanD*8,scrW,1,"=")
 local function close()
   running=false
   term.clear()
+  print("Finish after: "..tostring(tick))
   os.exit(0)
 end
 local function home()
