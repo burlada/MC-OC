@@ -38,8 +38,8 @@ function m.init(x, z, y, w, d, h)
             --dist=dist, sigma=sigma, scan_cnt=scan_cnt,
             cnt=0, -- size=rbw*rbd*rbh,
             values=values,
-            -- x=px, z=pz, y=py, w=rbw, d=rbd, h=rbh,
-            -- bx=_x, bz=_z, by=_y,
+            x=px, z=pz, y=py, w=rbw, d=rbd, h=rbh,
+            bx=_x, bz=_z, by=_y,
           }
         end
         function block.getData3D() return m._getBlockData3D(block, bw, bd, bh) end
