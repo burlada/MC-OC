@@ -50,7 +50,7 @@ end
 local function draw(tick)
   local repr = scanner.getRepr(by,bx,bz,scanW,scanD)
   local scans, sizes = scanner.getScanCnt()
-  local cx,cz,cy = scanner.x+(bx-1+scanW/2)*scaner.bw, scanner.z+(bz-1+scanD/2)*scaner.bd, scanner.y+(by-1)*scaner.bh
+  local cx,cz,cy = scanner.x+(bx-1+scanW/2)*scanner.bw, scanner.z+(bz-1+scanD/2)*scanner.bd, scanner.y+(by-1)*scanner.bh
   for z, line in ipairs(repr) do gpu.set(1, 1+#repr-z, line) end
   gpu.set(baseX,1, "Mode: "..scanMode)
   gpu.set(baseX,2, "Tick: "..tostring(tick))
