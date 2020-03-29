@@ -79,3 +79,5 @@ function m.listenKeyDown(keybinds, handlers, input)
   end
   return event.listen("key_down", keyDown)
 end
+
+return m
