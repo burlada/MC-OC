@@ -54,8 +54,8 @@ local function shift(dx,dz,dy)
   bx,bz=bx+dx,bz+dz
   bx = math.max(1,math.min(bx, scanner.bx-scanW+1))
   bz = math.max(1,math.min(bz, scanner.bz-scanD+1))
-  if fakeLevels[scanner.y+by+dy-1] or (1<=by and by<=scanner.by) then 
-    by = by + dy
+  if fakeLevels[scanner.y+by+dy-1] or ((1<=by+dy) and (by+dy<=scanner.by)) then 
+    by=by+dy
   end
 end
 local function activate(ny)
