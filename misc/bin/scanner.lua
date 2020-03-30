@@ -10,7 +10,7 @@ local keybinds = keys.loadConfig("/etc/scanner.cfg", {
   left = {{"left"}}, right = {{"right"}}, up = {{"up"}}, down = {{"down"}}, pageUp = {{"pageUp"}}, pageDown = {{"pageDown"}},
   scanLvlDown = {{"minus"}, {"numpadsub"}}, scanLvlUp = {{"shift", "equals"}, {"numpadadd"}},
   toggleMode = {{"space"}}, close = {{"control", "q"}}, home = {{"home"}}, toggleSelf = {{"h"}},
-  forcePageUp={{"control", "pageUp"}}, forcePageDown={{"control", "pageDown"}}, activate={{"control", "enter"}},
+  forcePageUp={{"control", "pageUp"}}, forcePageDown={{"control", "pageDown"}}, activate={{"control", "a"}},
   save={{"control", "s"}}
 })
 local changed, scanMode, status, showSelf = true, "none", "wait", true
@@ -61,6 +61,7 @@ end
 local function activate(ny)
   if ny == scanner.y then return end
   local x, z, w, d = scanner.x, scanner.z, scanner.w, scanner.d
+  fakeLevels[ny] = nil
   fakeLevels[scanner.y] = scanner.getRepr(1)
   scanner = nil
   scanner = scan.init(x,z,ny,w,d,1)
