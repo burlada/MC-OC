@@ -3,6 +3,7 @@ local scan=require("scan")
 local event=require("event")
 local keys=require("keys")
 local term=require("term")
+local unicode=require("unicode")
 local geo, gpu = comp.geolyzer, comp.gpu
 local scrW, scrH = gpu.getResolution()
 local keybinds = keys.loadConfig("/etc/scanner.cfg", {
@@ -79,7 +80,7 @@ end
 local function sliceRepr(repr)
   local res = {}
   local sx,fx = 1+(bx-1)*8,(bx+scanW-1)*8
-  for z=1+(bz-1)*8,(bz+scanD-1)*8 do table.insert(res, repr[z]:sub(sx,fx)) end
+  for z=1+(bz-1)*8,(bz+scanD-1)*8 do table.insert(res, unicode.sub(repr[z], sx, fx)) end
   return res
 end
 local function save()

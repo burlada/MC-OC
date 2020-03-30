@@ -3,8 +3,8 @@ exec = require "exec"
 misc = require "misc"
 scan = require "scan"
 
-s = " a b"
-print(s:match("a.?b"))
+s = "1234567890"
+print()
 
 --local data = scan.init(-31,-31,1,64,64,1)
 --while true do
