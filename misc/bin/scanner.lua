@@ -41,21 +41,22 @@ local function close()
   print("Finish after: "..tostring(tick))
   os.exit(0)
 end
-local function normalize()
+local function home()
+  local b = scanner.getNearestBlock()
+  bx,bz,by=b.bx-1,b.bz-1,b.by
   bx = math.max(1,math.min(bx, scanner.bx-scanW+1))
   bz = math.max(1,math.min(bz, scanner.bz-scanD+1))
   if not fakeLevels[scanner.y+by-1] then 
     by = math.max(1,math.min(by, scanner.by))
   end
 end
-local function home()
-  local b = scanner.getNearestBlock()
-  bx,bz,by=b.bx-1,b.bz-1,b.by
-  normalize()
-end
 local function shift(dx,dz,dy)
-  bx,bz,by=bx+dx,bz+dz,by+dy
-  normalize()
+  bx,bz=bx+dx,bz+dz
+  bx = math.max(1,math.min(bx, scanner.bx-scanW+1))
+  bz = math.max(1,math.min(bz, scanner.bz-scanD+1))
+  if fakeLevels[scanner.y+by+dy-1] or (1<=by and by<=scanner.by) then 
+    by = by + dy
+  end
 end
 local function activate(ny)
   if ny == scanner.y then return end
@@ -67,8 +68,7 @@ local function activate(ny)
 end
 local function forceShift(dy)
   local oby = by
-  by=by+dy
-  normalize()
+  shift(0,0,dy)
   if by ~= oby then return end
   activate(scanner.y+by+dy-1)
 end
